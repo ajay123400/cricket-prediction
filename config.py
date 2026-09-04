@@ -14,6 +14,7 @@ class Config:
 
     SITE_URL = os.environ.get("SITE_URL", "http://127.0.0.1:5000").rstrip("/")
     SITE_NAME = os.environ.get("SITE_NAME", "Cricket Predictions")
+    GOOGLE_SITE_VERIFICATION = os.environ.get("GOOGLE_SITE_VERIFICATION", "")
 
     ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
     ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "changeme123")

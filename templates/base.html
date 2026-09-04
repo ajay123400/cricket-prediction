@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% if google_site_verification %}<meta name="google-site-verification" content="{{ google_site_verification }}">{% endif %}
 <title>{% block title %}{{ site_settings.site_name }}{% endblock %}</title>
 <meta name="description" content="{% block meta_description %}{{ site_settings.description or 'Cricket match predictions and analysis.' }}{% endblock %}">
 {% block canonical %}<link rel="canonical" href="{{ site_url }}{{ request.path }}">{% endblock %}

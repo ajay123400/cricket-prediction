@@ -43,6 +43,7 @@ def register_jinja_helpers(app):
             "site_settings": SiteSetting.get(),
             "current_year": now_ist().year,
             "site_url": app.config["SITE_URL"],
+            "google_site_verification": app.config["GOOGLE_SITE_VERIFICATION"],
         }
 
     @app.template_filter("ist_date")
