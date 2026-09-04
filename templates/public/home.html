@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% if hero %}
+<section class="hero">
+  <div class="hero-label">Today's Cricket Predictions</div>
+  <div class="hero-card">
+    {% if hero.featured_image %}<img src="{{ url_for('static', filename='uploads/' + hero.featured_image) }}" alt="{{ hero.title }}">{% endif %}
+    <div class="hero-body">
+      <h1><a href="{{ url_for('public.article', slug=hero.slug) }}">{{ hero.team_1 }} vs {{ hero.team_2 }}</a></h1>
+      <p class="hero-sub">{{ hero.match_name or hero.title }}</p>
+      {% if hero.team_1_probability %}
+      <p class="prob-line">{{ hero.team_1 }} Win Probability: <strong>{{ hero.team_1_probability }}%</strong></p>
+      {% endif %}
+      <a class="btn" href="{{ url_for('public.article', slug=hero.slug) }}">Read Prediction &rarr;</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section>
+  <h2 class="section-title">Latest Predictions</h2>
+  <div class="card-grid">
+    {% for post in latest %}
+    <a class="post-card" href="{{ url_for('public.article', slug=post.slug) }}">
+      {% if post.featured_image %}<img src="{{ url_for('static', filename='uploads/' + post.featured_image) }}" alt="{{ post.title }}">{% endif %}
+      <div class="post-card-body">
+        <span class="badge">{{ post.category.name if post.category else post.tournament }}</span>
+        <h3>{{ post.team_1 }} vs {{ post.team_2 }}</h3>
+        <p>{{ post.summary[:100] if post.summary }}{% if post.summary and post.summary|length > 100 %}...{% endif %}</p>
+        <span class="post-date">{{ post.published_at|ist_date }}</span>
+      </div>
+    </a>
+    {% else %}
+    <p>No predictions published yet.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section>
+  <h2 class="section-title">Browse by Category</h2>
+  <div class="category-chips">
+    {% for cat in categories %}
+    <a class="chip" href="{{ url_for('public.category', slug=cat.slug) }}">{{ cat.name }}</a>
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}About - {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+<article class="static-page">
+  <h1>About {{ site_settings.site_name }}</h1>
+  <p>{{ site_settings.description or 'We publish cricket match predictions and analysis based on team form, head-to-head records, venue history and pitch conditions.' }}</p>
+
+  <h2>Disclaimer</h2>
+  <p>Predictions and analysis published on this website are for informational and entertainment purposes only. No prediction can guarantee the outcome of a cricket match. This website does not facilitate betting, wagering, or any form of money transaction &mdash; it is a purely editorial/analysis platform. Users should make their own decisions and comply with all applicable laws and regulations in their jurisdiction.</p>
+</article>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} - {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+
+<h1 class="page-title">{{ title }}</h1>
+
+<div class="card-grid">
+  {% for post in pagination.items %}
+  <a class="post-card" href="{{ url_for('public.article', slug=post.slug) }}">
+    {% if post.featured_image %}<img src="{{ url_for('static', filename='uploads/' + post.featured_image) }}" alt="{{ post.title }}">{% endif %}
+    <div class="post-card-body">
+      <span class="badge">{{ post.category.name if post.category else post.tournament }}</span>
+      <h3>{{ post.team_1 }} vs {{ post.team_2 }}</h3>
+      <p>{{ post.summary[:100] if post.summary }}{% if post.summary and post.summary|length > 100 %}...{% endif %}</p>
+      <span class="post-date">{{ post.published_at|ist_date }}</span>
+    </div>
+  </a>
+  {% else %}
+  <p>No predictions found.</p>
+  {% endfor %}
+</div>
+
+{% if pagination.pages > 1 %}
+<nav class="pagination">
+  {% if pagination.has_prev %}<a href="?page={{ pagination.prev_num }}">&laquo; Prev</a>{% endif %}
+  {% for p in pagination.iter_pages() %}
+    {% if p %}
+      <a class="{{ 'active' if p == pagination.page else '' }}" href="?page={{ p }}">{{ p }}</a>
+    {% else %}<span>...</span>{% endif %}
+  {% endfor %}
+  {% if pagination.has_next %}<a href="?page={{ pagination.next_num }}">Next &raquo;</a>{% endif %}
+</nav>
+{% endif %}
+
+{% endblock %}

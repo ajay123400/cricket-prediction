@@ -1,0 +1,40 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1 class="page-title">Dashboard</h1>
+
+<div class="stat-cards">
+  <div class="stat-card"><span>{{ total_posts }}</span>Total Posts</div>
+  <div class="stat-card"><span>{{ published }}</span>Published</div>
+  <div class="stat-card"><span>{{ drafts }}</span>Drafts</div>
+  <div class="stat-card"><span>{{ today_posts }}</span>Today's Posts</div>
+  <div class="stat-card"><span>{{ month_posts }}</span>This Month</div>
+</div>
+
+<h2 class="section-title">Recent Posts</h2>
+<div class="table-wrap">
+<table class="admin-table">
+  <thead><tr><th>Title</th><th>Category</th><th>Status</th><th>Published</th><th>Actions</th></tr></thead>
+  <tbody>
+  {% for post in recent %}
+    <tr>
+      <td>{{ post.title }}</td>
+      <td>{{ post.category.name if post.category else '-' }}</td>
+      <td><span class="status status-{{ post.status }}">{{ post.status }}</span></td>
+      <td>{{ post.published_at|ist_date if post.published_at else '-' }}</td>
+      <td class="actions">
+        {% if post.status == 'published' %}<a href="{{ url_for('public.article', slug=post.slug) }}" target="_blank">View</a>{% endif %}
+        <a href="{{ url_for('admin.post_edit', post_id=post.id) }}">Edit</a>
+        <form method="post" action="{{ url_for('admin.post_delete', post_id=post.id) }}" onsubmit="return confirm('Are you sure you want to delete this post?');" style="display:inline">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="link-btn danger">Delete</button>
+        </form>
+      </td>
+    </tr>
+  {% else %}
+    <tr><td colspan="5">No posts yet.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

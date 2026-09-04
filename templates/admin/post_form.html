@@ -1,0 +1,99 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}{{ 'Edit' if post else 'New' }} Prediction{% endblock %}
+{% block content %}
+<h1 class="page-title">{{ 'Edit' if post else 'New' }} Prediction</h1>
+
+<form method="post" enctype="multipart/form-data" class="post-form">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  <fieldset>
+    <legend>Match Details</legend>
+    <label>Title</label>
+    <input type="text" name="title" value="{{ post.title if post else '' }}" required>
+
+    <div class="form-row">
+      <div><label>Team 1</label><input type="text" name="team_1" value="{{ post.team_1 if post else '' }}" required></div>
+      <div><label>Team 2</label><input type="text" name="team_2" value="{{ post.team_2 if post else '' }}" required></div>
+    </div>
+
+    <label>Match Name</label>
+    <input type="text" name="match_name" value="{{ post.match_name if post else '' }}">
+
+    <div class="form-row">
+      <div><label>Match Date</label><input type="date" name="match_date" value="{{ post.match_date.isoformat() if post and post.match_date else '' }}"></div>
+      <div><label>Match Time (IST)</label><input type="time" name="match_time" value="{{ post.match_time.strftime('%H:%M') if post and post.match_time else '' }}"></div>
+    </div>
+
+    <div class="form-row">
+      <div><label>Tournament</label><input type="text" name="tournament" value="{{ post.tournament if post else '' }}"></div>
+      <div><label>Venue</label><input type="text" name="venue" value="{{ post.venue if post else '' }}"></div>
+    </div>
+
+    <label>Category</label>
+    <select name="category_id">
+      <option value="">-- Select --</option>
+      {% for cat in categories %}
+      <option value="{{ cat.id }}" {{ 'selected' if post and post.category_id == cat.id }}>{{ cat.name }}</option>
+      {% endfor %}
+    </select>
+  </fieldset>
+
+  <fieldset>
+    <legend>Prediction</legend>
+    <label>Prediction</label>
+    <select name="prediction">
+      <option value="">-- Select --</option>
+      <option value="team_1" {{ 'selected' if post and post.prediction=='team_1' }}>Team 1</option>
+      <option value="team_2" {{ 'selected' if post and post.prediction=='team_2' }}>Team 2</option>
+      <option value="draw" {{ 'selected' if post and post.prediction=='draw' }}>Draw</option>
+      <option value="no_result" {{ 'selected' if post and post.prediction=='no_result' }}>No Result</option>
+    </select>
+
+    <div class="form-row">
+      <div><label>Team 1 Probability (%)</label><input type="number" min="0" max="100" name="team_1_probability" value="{{ post.team_1_probability if post and post.team_1_probability is not none else '' }}"></div>
+      <div><label>Team 2 Probability (%)</label><input type="number" min="0" max="100" name="team_2_probability" value="{{ post.team_2_probability if post and post.team_2_probability is not none else '' }}"></div>
+    </div>
+
+    <label>Confidence</label>
+    <select name="confidence">
+      <option value="">-- Select --</option>
+      <option value="low" {{ 'selected' if post and post.confidence=='low' }}>Low</option>
+      <option value="medium" {{ 'selected' if post and post.confidence=='medium' }}>Medium</option>
+      <option value="high" {{ 'selected' if post and post.confidence=='high' }}>High</option>
+    </select>
+  </fieldset>
+
+  <fieldset>
+    <legend>Content</legend>
+    <label>Featured Image (jpg/png/webp, max 2MB)</label>
+    {% if post and post.featured_image %}
+    <img class="current-image" src="{{ url_for('static', filename='uploads/' + post.featured_image) }}" alt="current image">
+    {% endif %}
+    <input type="file" name="featured_image" accept=".jpg,.jpeg,.png,.webp">
+
+    <label>Short Summary</label>
+    <textarea name="summary" rows="3">{{ post.summary if post else '' }}</textarea>
+
+    <label>Full Article Content (use the toolbar for headings/lists/links — cover Match Details, Recent Form, Head to Head, Venue Analysis, Pitch Report, Key Players, Team Strength, Weaknesses, Match Prediction, Final Verdict)</label>
+    <textarea name="content" rows="18">{{ post.content if post else '' }}</textarea>
+  </fieldset>
+
+  <fieldset>
+    <legend>SEO</legend>
+    <label>SEO Title</label>
+    <input type="text" name="seo_title" value="{{ post.seo_title if post else '' }}">
+    <label>SEO Description</label>
+    <textarea name="seo_description" rows="2">{{ post.seo_description if post else '' }}</textarea>
+    <label>SEO Keywords</label>
+    <input type="text" name="seo_keywords" value="{{ post.seo_keywords if post else '' }}">
+  </fieldset>
+
+  <div class="form-actions">
+    <button type="submit" name="action" value="save_draft" class="btn btn-secondary">Save Draft</button>
+    <button type="submit" name="action" value="publish" class="btn">Publish</button>
+  </div>
+</form>
+{% endblock %}
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/editor.js') }}"></script>
+{% endblock %}

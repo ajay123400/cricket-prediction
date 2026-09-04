@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}{{ post.seo_title or post.title }}{% endblock %}
+{% block meta_description %}{{ post.seo_description or post.summary }}{% endblock %}
+{% block og_tags %}
+<meta property="og:title" content="{{ post.seo_title or post.title }}">
+<meta property="og:description" content="{{ post.seo_description or post.summary }}">
+<meta property="og:type" content="article">
+<meta property="og:url" content="{{ site_url }}{{ request.path }}">
+{% if post.featured_image %}<meta property="og:image" content="{{ site_url }}{{ url_for('static', filename='uploads/' + post.featured_image) }}">{% endif %}
+{% endblock %}
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": {{ post.title|tojson }},
+  "datePublished": {{ (post.published_at.isoformat() if post.published_at else '')|tojson }},
+  "dateModified": {{ (post.updated_at.isoformat() if post.updated_at else '')|tojson }},
+  {% if post.featured_image %}"image": [{{ (site_url + url_for('static', filename='uploads/' + post.featured_image))|tojson }}],{% endif %}
+  "author": {"@type": "Organization", "name": {{ site_settings.site_name|tojson }}}
+}
+</script>
+{% endblock %}
+{% block content %}
+
+<article class="article-page">
+  <nav class="breadcrumb"><a href="{{ url_for('public.home') }}">Home</a> / {% if post.category %}<a href="{{ url_for('public.category', slug=post.category.slug) }}">{{ post.category.name }}</a> / {% endif %}<span>{{ post.title }}</span></nav>
+
+  <h1>{{ post.title }}</h1>
+  <p class="published-line">Published: {{ post.published_at|ist_date }}</p>
+
+  {% if post.featured_image %}
+  <img class="featured-img" src="{{ url_for('static', filename='uploads/' + post.featured_image) }}" alt="{{ post.title }}">
+  {% endif %}
+
+  <div class="prediction-box">
+    <div class="prob-row">
+      <div><span>{{ post.team_1 }}</span><strong>{{ post.team_1_probability }}%</strong></div>
+      <div><span>{{ post.team_2 }}</span><strong>{{ post.team_2_probability }}%</strong></div>
+    </div>
+    <p><strong>Prediction:</strong> {{ post.prediction|replace('_',' ')|title }}</p>
+    <p><strong>Confidence:</strong> {{ post.confidence|title }}</p>
+  </div>
+
+  <div class="match-meta">
+    {% if post.venue %}<span>Venue: {{ post.venue }}</span>{% endif %}
+    {% if post.match_date %}<span>Date: {{ post.match_date|ist_date }}</span>{% endif %}
+    {% if post.match_time %}<span>Time (IST): {{ post.match_time|ist_time }}</span>{% endif %}
+    {% if post.tournament %}<span>Tournament: {{ post.tournament }}</span>{% endif %}
+  </div>
+
+  <div class="article-content">
+    {{ content_html|safe }}
+  </div>
+
+  <div class="share-buttons">
+    <a target="_blank" rel="noopener" href="https://t.me/share/url?url={{ (site_url + request.path)|urlencode }}&text={{ post.title|urlencode }}">Telegram</a>
+    <a target="_blank" rel="noopener" href="https://wa.me/?text={{ (post.title + ' ' + site_url + request.path)|urlencode }}">WhatsApp</a>
+    <button type="button" class="copy-link-btn" data-url="{{ site_url }}{{ request.path }}">Copy Link</button>
+  </div>
+
+  {% if related %}
+  <section>
+    <h2 class="section-title">Related Predictions</h2>
+    <div class="card-grid">
+      {% for r in related %}
+      <a class="post-card" href="{{ url_for('public.article', slug=r.slug) }}">
+        {% if r.featured_image %}<img src="{{ url_for('static', filename='uploads/' + r.featured_image) }}" alt="{{ r.title }}">{% endif %}
+        <div class="post-card-body">
+          <h3>{{ r.team_1 }} vs {{ r.team_2 }}</h3>
+          <span class="post-date">{{ r.published_at|ist_date }}</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</article>
+
+{% endblock %}
+{% block extra_scripts %}
+<script>
+document.querySelector('.copy-link-btn')?.addEventListener('click', function() {
+  navigator.clipboard.writeText(this.dataset.url);
+  this.textContent = 'Copied!';
+  setTimeout(() => this.textContent = 'Copy Link', 1500);
+});
+</script>
+{% endblock %}
