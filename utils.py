@@ -5,6 +5,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 import bleach
+from bleach.css_sanitizer import CSSSanitizer
 import markdown as md
 from PIL import Image
 from werkzeug.utils import secure_filename
@@ -24,6 +25,16 @@ ALLOWED_ATTRS = {
     "td": ["style", "colspan", "rowspan"],
     "th": ["style", "colspan", "rowspan"],
 }
+ALLOWED_CSS_PROPERTIES = [
+    "width", "height", "min-width", "max-width",
+    "display", "flex", "flex-direction", "align-items", "justify-content", "gap",
+    "background", "background-color", "color",
+    "border", "border-top", "border-right", "border-bottom", "border-left",
+    "border-radius", "border-collapse", "overflow",
+    "padding", "margin", "text-align", "vertical-align",
+    "font-size", "font-weight", "position", "top", "left",
+]
+CSS_SANITIZER = CSSSanitizer(allowed_css_properties=ALLOWED_CSS_PROPERTIES)
 
 
 def now_ist():
@@ -55,7 +66,10 @@ def render_markdown(content):
     if not content:
         return ""
     html = md.markdown(content, extensions=["extra", "nl2br"])
-    return bleach.clean(html, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRS, strip=True)
+    return bleach.clean(
+        html, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRS,
+        css_sanitizer=CSS_SANITIZER, strip=True,
+    )
 
 
 def allowed_image(filename, allowed_exts):
