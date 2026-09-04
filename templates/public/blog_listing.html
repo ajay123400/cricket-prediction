@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} - {{ site_settings.site_name }}{% endblock %}
+{% block content %}
+
+<h1 class="page-title">{{ title }}</h1>
+
+<div class="blog-card-list" id="blogCardList">
+{% include "public/_blog_cards.html" %}
+</div>
+
+{% if pagination.has_next %}
+<div class="blog-load-more-wrap">
+  <button type="button" id="loadMoreBtn" class="btn btn-secondary" data-next-page="{{ pagination.next_num }}">Read More</button>
+</div>
+{% endif %}
+
+{% endblock %}
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/blog.js') }}"></script>
+{% endblock %}

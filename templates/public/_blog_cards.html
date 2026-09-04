@@ -1,0 +1,24 @@
+{% if ajax_response %}<span id="pageInfo" data-has-next="{{ 'true' if pagination.has_next else 'false' }}" data-next-page="{{ pagination.next_num or '' }}" hidden></span>{% endif %}
+{% for post in pagination.items %}
+<article class="blog-card">
+  <a class="blog-card-thumb" href="{{ url_for('public.article', slug=post.slug) }}">
+    {% if post.featured_image %}
+    <img src="{{ url_for('static', filename='uploads/' + post.featured_image) }}" alt="{{ post.title }}" loading="lazy">
+    {% else %}
+    <div class="blog-card-thumb-placeholder"></div>
+    {% endif %}
+  </a>
+  <div class="blog-card-body">
+    <h2><a href="{{ url_for('public.article', slug=post.slug) }}">{{ post.title }}</a></h2>
+    {% if post.summary %}<p class="blog-card-summary">{{ post.summary[:160] }}{% if post.summary|length > 160 %}...{% endif %}</p>{% endif %}
+    <div class="blog-card-meta">
+      <span class="blog-card-time">{{ post.published_at|time_ago }}</span>
+      {% if post.team_1 %}<a class="blog-card-tag" href="{{ url_for('public.search', q=post.team_1) }}">{{ post.team_1|upper }}</a>{% endif %}
+      {% if post.team_2 %}<a class="blog-card-tag" href="{{ url_for('public.search', q=post.team_2) }}">{{ post.team_2|upper }}</a>{% endif %}
+      {% if post.tournament %}<span class="blog-card-tag">{{ post.tournament|upper }}</span>{% endif %}
+    </div>
+  </div>
+</article>
+{% else %}
+<p>No blog posts yet.</p>
+{% endfor %}

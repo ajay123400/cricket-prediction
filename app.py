@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from flask import Flask, Response, render_template, request
 
 from config import config_map
@@ -55,6 +56,29 @@ def register_jinja_helpers(app):
         if not value:
             return ""
         return value.strftime(fmt)
+
+    @app.template_filter("time_ago")
+    def time_ago(value):
+        if not value:
+            return ""
+        # published_at is stored as naive UTC (datetime.utcnow()); compare in the same frame
+        seconds = (datetime.utcnow() - value).total_seconds()
+        if seconds < 60:
+            return "just now"
+        minutes = int(seconds // 60)
+        if minutes < 60:
+            return f"{minutes} minute{'s' if minutes != 1 else ''} ago"
+        hours = int(minutes // 60)
+        if hours < 24:
+            return f"{hours} hour{'s' if hours != 1 else ''} ago"
+        days = int(hours // 24)
+        if days < 30:
+            return f"{days} day{'s' if days != 1 else ''} ago"
+        months = int(days // 30)
+        if months < 12:
+            return f"{months} month{'s' if months != 1 else ''} ago"
+        years = int(months // 12)
+        return f"{years} year{'s' if years != 1 else ''} ago"
 
 
 def register_security_headers(app):

@@ -3,11 +3,12 @@ from flask import Blueprint, render_template, request, abort, redirect, url_for
 
 from extensions import db, cache
 from models import Post, Category, PostSlugHistory
-
-BLOG_CATEGORY_SLUG = "blog"
 from utils import render_markdown, now_ist
 
 public_bp = Blueprint("public", __name__, template_folder="../../templates/public")
+
+BLOG_CATEGORY_SLUG = "blog"
+BLOG_POSTS_PER_PAGE = 7
 
 
 def _published_query():
@@ -65,6 +66,18 @@ def article(slug):
 def category(slug):
     cat = Category.query.filter_by(slug=slug).first_or_404()
     page = request.args.get("page", 1, type=int)
+
+    if cat.slug == BLOG_CATEGORY_SLUG:
+        pagination = (
+            _published_query()
+            .filter(Post.category_id == cat.id)
+            .order_by(Post.published_at.desc())
+            .paginate(page=page, per_page=BLOG_POSTS_PER_PAGE, error_out=False)
+        )
+        if request.args.get("ajax"):
+            return render_template("public/_blog_cards.html", pagination=pagination, ajax_response=True)
+        return render_template("public/blog_listing.html", pagination=pagination, title=cat.name)
+
     pagination = (
         _published_query()
         .filter(Post.category_id == cat.id)
