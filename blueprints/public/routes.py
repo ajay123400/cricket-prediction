@@ -3,6 +3,8 @@ from flask import Blueprint, render_template, request, abort, redirect, url_for
 
 from extensions import db, cache
 from models import Post, Category, PostSlugHistory
+
+BLOG_CATEGORY_SLUG = "blog"
 from utils import render_markdown, now_ist
 
 public_bp = Blueprint("public", __name__, template_folder="../../templates/public")
@@ -29,6 +31,7 @@ def today():
     pagination = (
         _published_query()
         .filter(Post.match_date == today_date)
+        .filter(db.or_(Post.category_id.is_(None), ~Post.category.has(Category.slug == BLOG_CATEGORY_SLUG)))
         .order_by(Post.match_time.asc())
         .paginate(page=page, per_page=20, error_out=False)
     )
