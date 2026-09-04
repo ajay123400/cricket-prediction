@@ -58,6 +58,11 @@
 .wysiwyg-editable ul, .wysiwyg-editable ol { padding-left: 24px; }
 .wysiwyg-editable p { margin: 0 0 10px; }
 
+.wysiwyg-color-btn { position: relative; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+.wysiwyg-color-swatch { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 4px; border: 1px solid #d1d5db; border-bottom: 3px solid; font-size: .8rem; font-weight: 700; background: #fff; }
+.wysiwyg-color-swatch:hover { background: #ecfdf5; }
+.wysiwyg-color-btn input[type="color"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; border: none; padding: 0; }
+
 @media (max-width: 600px) {
   .form-row { grid-template-columns: 1fr; }
 }

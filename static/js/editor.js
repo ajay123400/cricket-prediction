@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   try {
     document.execCommand('defaultParagraphSeparator', false, 'p');
+    document.execCommand('styleWithCSS', false, true);
   } catch (e) { /* not supported in all browsers, harmless */ }
 
   var buttons = [
@@ -51,6 +52,39 @@ document.addEventListener('DOMContentLoaded', function () {
       sync();
     });
     toolbar.appendChild(btn);
+  });
+
+  function addColorPicker(title, defaultColor, apply) {
+    var wrap = document.createElement('label');
+    wrap.className = 'wysiwyg-color-btn';
+    wrap.title = title;
+
+    var swatch = document.createElement('span');
+    swatch.className = 'wysiwyg-color-swatch';
+    swatch.textContent = 'A';
+    swatch.style.borderBottomColor = defaultColor;
+    wrap.appendChild(swatch);
+
+    var input = document.createElement('input');
+    input.type = 'color';
+    input.value = defaultColor;
+    input.addEventListener('input', function () {
+      editable.focus();
+      apply(input.value);
+      swatch.style.borderBottomColor = input.value;
+      sync();
+    });
+    wrap.appendChild(input);
+    toolbar.appendChild(wrap);
+  }
+
+  addColorPicker('Text color', '#1a1a1a', function (color) {
+    document.execCommand('foreColor', false, color);
+  });
+  addColorPicker('Highlight / background color', '#fff3b0', function (color) {
+    if (!document.execCommand('hiliteColor', false, color)) {
+      document.execCommand('backColor', false, color);
+    }
   });
 
   function sync() {
