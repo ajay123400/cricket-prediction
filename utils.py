@@ -18,7 +18,11 @@ ALLOWED_TAGS = [
 ALLOWED_ATTRS = {
     "a": ["href", "title", "rel", "target"],
     "img": ["src", "alt", "title"],
-    "span": ["class"],
+    "span": ["class", "style"],
+    "div": ["class", "style"],
+    "table": ["class", "style"],
+    "td": ["style", "colspan", "rowspan"],
+    "th": ["style", "colspan", "rowspan"],
 }
 
 
