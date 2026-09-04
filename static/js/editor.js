@@ -70,26 +70,32 @@ document.addEventListener('DOMContentLoaded', function () {
     sel.addRange(savedRange);
   }
 
-  var sizeSelect = document.createElement('select');
-  sizeSelect.className = 'wysiwyg-size-select';
-  sizeSelect.title = 'Text size';
-  [
-    { label: 'Size', value: '' },
-    { label: 'Small', value: '13px' },
-    { label: 'Normal', value: '16px' },
-    { label: 'Large', value: '20px' },
-    { label: 'Extra large', value: '26px' },
-  ].forEach(function (opt) {
+  var DEFAULT_SIZE = 16;
+  var sizeWrap = document.createElement('span');
+  sizeWrap.className = 'wysiwyg-size-wrap';
+  sizeWrap.title = 'Text size (px) — type any number, like in Word';
+
+  var sizeInput = document.createElement('input');
+  sizeInput.type = 'number';
+  sizeInput.className = 'wysiwyg-size-input';
+  sizeInput.min = '8';
+  sizeInput.max = '96';
+  sizeInput.step = '1';
+  sizeInput.value = DEFAULT_SIZE;
+  sizeInput.setAttribute('list', 'wysiwygFontSizes');
+
+  var datalist = document.createElement('datalist');
+  datalist.id = 'wysiwygFontSizes';
+  [10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 60, 72].forEach(function (n) {
     var o = document.createElement('option');
-    o.value = opt.value;
-    o.textContent = opt.label;
-    sizeSelect.appendChild(o);
+    o.value = n;
+    datalist.appendChild(o);
   });
-  sizeSelect.addEventListener('mousedown', saveRange);
-  sizeSelect.addEventListener('change', function () {
-    var size = sizeSelect.value;
-    sizeSelect.value = '';
-    if (!size) return;
+
+  function applySize() {
+    var n = parseInt(sizeInput.value, 10);
+    if (!n || n < 1) return;
+    var size = n + 'px';
     editable.focus();
     restoreRange();
     document.execCommand('styleWithCSS', false, false);
@@ -102,8 +108,17 @@ document.addEventListener('DOMContentLoaded', function () {
       fontEl.replaceWith(span);
     });
     sync();
+  }
+
+  sizeInput.addEventListener('mousedown', saveRange);
+  sizeInput.addEventListener('change', applySize);
+  sizeInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); applySize(); }
   });
-  toolbar.appendChild(sizeSelect);
+
+  sizeWrap.appendChild(sizeInput);
+  sizeWrap.appendChild(datalist);
+  toolbar.appendChild(sizeWrap);
 
   function addColorPicker(title, defaultColor, apply) {
     var wrap = document.createElement('label');
