@@ -54,6 +54,57 @@ document.addEventListener('DOMContentLoaded', function () {
     toolbar.appendChild(btn);
   });
 
+  var savedRange = null;
+  editable.addEventListener('mouseup', saveRange);
+  editable.addEventListener('keyup', saveRange);
+  function saveRange() {
+    var sel = window.getSelection();
+    if (sel.rangeCount > 0 && editable.contains(sel.anchorNode)) {
+      savedRange = sel.getRangeAt(0);
+    }
+  }
+  function restoreRange() {
+    if (!savedRange) return;
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(savedRange);
+  }
+
+  var sizeSelect = document.createElement('select');
+  sizeSelect.className = 'wysiwyg-size-select';
+  sizeSelect.title = 'Text size';
+  [
+    { label: 'Size', value: '' },
+    { label: 'Small', value: '13px' },
+    { label: 'Normal', value: '16px' },
+    { label: 'Large', value: '20px' },
+    { label: 'Extra large', value: '26px' },
+  ].forEach(function (opt) {
+    var o = document.createElement('option');
+    o.value = opt.value;
+    o.textContent = opt.label;
+    sizeSelect.appendChild(o);
+  });
+  sizeSelect.addEventListener('mousedown', saveRange);
+  sizeSelect.addEventListener('change', function () {
+    var size = sizeSelect.value;
+    sizeSelect.value = '';
+    if (!size) return;
+    editable.focus();
+    restoreRange();
+    document.execCommand('styleWithCSS', false, false);
+    document.execCommand('fontSize', false, '7');
+    document.execCommand('styleWithCSS', false, true);
+    editable.querySelectorAll('font[size="7"]').forEach(function (fontEl) {
+      var span = document.createElement('span');
+      span.style.fontSize = size;
+      while (fontEl.firstChild) span.appendChild(fontEl.firstChild);
+      fontEl.replaceWith(span);
+    });
+    sync();
+  });
+  toolbar.appendChild(sizeSelect);
+
   function addColorPicker(title, defaultColor, apply) {
     var wrap = document.createElement('label');
     wrap.className = 'wysiwyg-color-btn';
