@@ -68,8 +68,10 @@
     <label>Featured Image (jpg/png/webp, max 2MB)</label>
     {% if post and post.featured_image %}
     <img class="current-image" src="{{ url_for('static', filename='uploads/' + post.featured_image) }}" alt="current image">
+    <label class="checkbox-label"><input type="checkbox" name="remove_image" value="1"> Remove current image</label>
     {% endif %}
     <input type="file" name="featured_image" accept=".jpg,.jpeg,.png,.webp">
+    <p class="field-hint">Landscape images work best (e.g. 1200&times;675px or wider) — images are cropped to fit, so a portrait photo will lose its edges. Uploads are auto-converted to WebP.</p>
 
     <label>Short Summary</label>
     <textarea name="summary" rows="3">{{ post.summary if post else '' }}</textarea>

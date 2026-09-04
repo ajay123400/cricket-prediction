@@ -33,14 +33,18 @@
   <img class="featured-img" src="{{ url_for('static', filename='uploads/' + post.featured_image) }}" alt="{{ post.title }}">
   {% endif %}
 
+  {% if post.team_1_probability is not none or post.team_2_probability is not none or post.prediction or post.confidence %}
   <div class="prediction-box">
+    {% if post.team_1_probability is not none or post.team_2_probability is not none %}
     <div class="prob-row">
-      <div><span>{{ post.team_1 }}</span><strong>{{ post.team_1_probability }}%</strong></div>
-      <div><span>{{ post.team_2 }}</span><strong>{{ post.team_2_probability }}%</strong></div>
+      {% if post.team_1_probability is not none %}<div><span>{{ post.team_1 }}</span><strong>{{ post.team_1_probability }}%</strong></div>{% endif %}
+      {% if post.team_2_probability is not none %}<div><span>{{ post.team_2 }}</span><strong>{{ post.team_2_probability }}%</strong></div>{% endif %}
     </div>
-    <p><strong>Prediction:</strong> {{ post.prediction|replace('_',' ')|title }}</p>
-    <p><strong>Confidence:</strong> {{ post.confidence|title }}</p>
+    {% endif %}
+    {% if post.prediction %}<p><strong>Prediction:</strong> {{ post.prediction|replace('_',' ')|title }}</p>{% endif %}
+    {% if post.confidence %}<p><strong>Confidence:</strong> {{ post.confidence|title }}</p>{% endif %}
   </div>
+  {% endif %}
 
   <div class="match-meta">
     {% if post.venue %}<span>Venue: {{ post.venue }}</span>{% endif %}

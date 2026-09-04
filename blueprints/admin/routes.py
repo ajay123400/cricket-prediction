@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from functools import wraps
 
@@ -126,6 +127,8 @@ def _apply_post_form(post, form, files, app_config):
     post.seo_keywords = form.get("seo_keywords", "").strip()
 
     image_file = files.get("featured_image")
+    remove_image = form.get("remove_image") == "1"
+
     if image_file and image_file.filename:
         filename = save_uploaded_image(
             image_file,
@@ -133,7 +136,19 @@ def _apply_post_form(post, form, files, app_config):
             app_config["ALLOWED_IMAGE_EXTENSIONS"],
             app_config["MAX_UPLOAD_MB"],
         )
+        _delete_post_image(post, app_config)
         post.featured_image = filename
+    elif remove_image:
+        _delete_post_image(post, app_config)
+        post.featured_image = None
+
+
+def _delete_post_image(post, app_config):
+    if not post.featured_image:
+        return
+    path = os.path.join(app_config["UPLOAD_FOLDER"], post.featured_image)
+    if os.path.exists(path):
+        os.remove(path)
 
 
 @admin_bp.route("/posts/new", methods=["GET", "POST"])

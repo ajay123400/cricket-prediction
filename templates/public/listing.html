@@ -9,7 +9,7 @@
   <a class="post-card" href="{{ url_for('public.article', slug=post.slug) }}">
     {% if post.featured_image %}<img src="{{ url_for('static', filename='uploads/' + post.featured_image) }}" alt="{{ post.title }}">{% endif %}
     <div class="post-card-body">
-      <span class="badge">{{ post.category.name if post.category else post.tournament }}</span>
+      {% if post.category or post.tournament %}<span class="badge">{{ post.category.name if post.category else post.tournament }}</span>{% endif %}
       <h3>{{ post.team_1 }} vs {{ post.team_2 }}</h3>
       <p>{{ post.summary[:100] if post.summary }}{% if post.summary and post.summary|length > 100 %}...{% endif %}</p>
       <span class="post-date">{{ post.published_at|ist_date }}</span>
